@@ -1,0 +1,10 @@
+# Lifequest Sample Dashboard
+# Add this as a new dashboard in Home Assistant:
+#   Settings → Dashboards → Add Dashboard → Raw Configuration Editor → paste this
+
+views:
+  - title: Lifequest
+    path: lifequest
+    type: panel
+    cards:
+      - type: custom:lifequest-card
