@@ -1,0 +1,11 @@
+{
+  "domain": "lifequest",
+  "name": "Lifequest",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://git.heathmont.ahpee.net/ahpee/lifequest_hacs",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://git.heathmont.ahpee.net/ahpee/lifequest_hacs/issues",
+  "requirements": ["aiohttp>=3.8.0"],
+  "version": "0.1.0"
+}

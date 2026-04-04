@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Lifequest",
+        "data": {
+          "base_url": "Lifequest Server URL",
+          "email": "Admin Email",
+          "password": "Admin Password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to Lifequest server",
+      "invalid_auth": "Invalid email or password",
+      "not_admin": "Account is not an admin",
+      "unknown": "Unknown error"
+    },
+    "abort": {
+      "already_configured": "Lifequest is already configured"
+    }
+  }
+}
