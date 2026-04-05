@@ -29,9 +29,19 @@ class LifequestCoordinator(DataUpdateCoordinator[dict]):
         """Fetch all player data from Lifequest."""
         try:
             players = await self.api.get_players()
+
+            # Fetch level names
+            try:
+                levels_list = await self.api.get_levels()
+                level_names = {l["level"]: l["name"] for l in levels_list}
+            except LifequestAPIError:
+                level_names = {}
+                _LOGGER.warning("Failed to fetch level names")
+
             data = {}
             for player in players:
                 player_id = player["id"]
+                player_level = player.get("level", 1)
                 try:
                     detail = await self.api.get_player_detail(player_id)
                     quests = detail.get("assignedQuests", [])
@@ -44,7 +54,10 @@ class LifequestCoordinator(DataUpdateCoordinator[dict]):
                     "id": player_id,
                     "name": player.get("name", f"Player {player_id}"),
                     "email": player.get("email", ""),
-                    "level": player.get("level", 1),
+                    "level": player_level,
+                    "level_name": level_names.get(
+                        player_level, f"Level {player_level}"
+                    ),
                     "current_points": player.get("current_points", 0),
                     "reward_threshold": player.get("reward_threshold", 250),
                     "avatar_url": player.get("avatar_url"),

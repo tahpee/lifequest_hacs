@@ -18,6 +18,7 @@ USERS_PLAYER_DETAIL = "/api/users/players/{player_id}"
 QUESTS = "/api/quests"
 QUESTS_COMPLETE = "/api/quests/{quest_id}/complete"
 POINTS_PROGRESS = "/api/points/progress"
+LEVELS = "/api/levels"
 
 # Events
 EVENT_QUEST_COMPLETED = "lifequest_quest_completed"

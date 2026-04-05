@@ -132,7 +132,10 @@ class LifequestLevelSensor(LifequestBaseSensor):
         player = self._get_player()
         if player is None:
             return {}
-        return {"player_id": self._player_id}
+        return {
+            "player_id": self._player_id,
+            "level_name": player.get("level_name", ""),
+        }
 
 
 class LifequestQuestsAvailableSensor(LifequestBaseSensor):

@@ -5,6 +5,7 @@ import aiohttp
 
 from .const import (
     AUTH_LOGIN,
+    LEVELS,
     USERS_PLAYERS,
     USERS_PLAYER_DETAIL,
     QUESTS,
@@ -114,3 +115,7 @@ class LifequestAPI:
         return await self._request(
             "GET", POINTS_PROGRESS, params={"player_id": str(player_id)}
         )
+
+    async def get_levels(self) -> list[dict]:
+        """Fetch all level names."""
+        return await self._request("GET", LEVELS)
