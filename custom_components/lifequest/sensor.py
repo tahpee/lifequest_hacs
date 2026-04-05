@@ -61,7 +61,7 @@ class LifequestBaseSensor(CoordinatorEntity[LifequestCoordinator], SensorEntity)
         self._attr_unique_id = f"lifequest_{slug}_{sensor_key}"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, f"player_{player_id}")},
-            name=f"Lifequest {coordinator.data[player_id]['name']}",
+            name=coordinator.data[player_id]["name"],
             manufacturer="Lifequest",
         )
 
