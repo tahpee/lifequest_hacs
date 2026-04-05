@@ -105,10 +105,11 @@ class LifequestAPI:
         """Fetch assigned quests for a player."""
         return await self._request("GET", QUESTS, params={"player_id": str(player_id)})
 
-    async def complete_quest(self, quest_id: int) -> dict:
+    async def complete_quest(self, quest_id: int, player_id: int | None = None) -> dict:
         """Complete a quest."""
         path = QUESTS_COMPLETE.format(quest_id=quest_id)
-        return await self._request("POST", path)
+        json_data = {"player_id": player_id} if player_id else None
+        return await self._request("POST", path, json=json_data)
 
     async def get_points_progress(self, player_id: int) -> dict:
         """Fetch points progress for a player."""

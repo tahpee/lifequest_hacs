@@ -51,7 +51,7 @@ def async_setup_services(hass: HomeAssistant) -> None:
                     break
 
         try:
-            result = await api.complete_quest(quest_id)
+            result = await api.complete_quest(quest_id, player_id=player_id)
         except LifequestAPIError as err:
             raise HomeAssistantError(f"Failed to complete quest: {err}") from err
 
