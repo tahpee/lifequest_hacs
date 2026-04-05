@@ -19,11 +19,15 @@ QUESTS = "/api/quests"
 QUESTS_COMPLETE = "/api/quests/{quest_id}/complete"
 POINTS_PROGRESS = "/api/points/progress"
 LEVELS = "/api/levels"
+REWARDS_PENDING = "/api/rewards/pending"
+REWARDS_DELIVER = "/api/rewards/{cycle_id}/deliver"
 
 # Events
 EVENT_QUEST_COMPLETED = "lifequest_quest_completed"
 EVENT_PLAYER_LEVELED_UP = "lifequest_player_leveled_up"
+EVENT_REWARD_PENDING = "lifequest_reward_pending"
 
 # Services
 SERVICE_COMPLETE_QUEST = "complete_quest"
 SERVICE_REFRESH_DATA = "refresh_data"
+SERVICE_DELIVER_REWARD = "deliver_reward"

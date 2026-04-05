@@ -7,7 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import LifequestAPI, LifequestAPIError
-from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
+from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, EVENT_REWARD_PENDING
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,6 +24,7 @@ class LifequestCoordinator(DataUpdateCoordinator[dict]):
             update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
         )
         self.api = api
+        self._known_reward_cycle_ids: set[int] = set()
 
     async def _async_update_data(self) -> dict:
         """Fetch all player data from Lifequest."""
@@ -37,6 +38,30 @@ class LifequestCoordinator(DataUpdateCoordinator[dict]):
             except LifequestAPIError:
                 level_names = {}
                 _LOGGER.warning("Failed to fetch level names")
+
+            # Fetch pending rewards
+            try:
+                pending_rewards = await self.api.get_pending_rewards()
+            except LifequestAPIError:
+                pending_rewards = []
+                _LOGGER.warning("Failed to fetch pending rewards")
+
+            # Detect new rewards and fire events
+            current_cycle_ids = {r["id"] for r in pending_rewards}
+            new_cycle_ids = current_cycle_ids - self._known_reward_cycle_ids
+            for reward in pending_rewards:
+                if reward["id"] in new_cycle_ids:
+                    self.hass.bus.async_fire(
+                        EVENT_REWARD_PENDING,
+                        {
+                            "cycle_id": reward["id"],
+                            "player_id": reward["player_id"],
+                            "player_name": reward.get("player_name", "Unknown"),
+                            "level_name": reward.get("level_name", ""),
+                            "level": reward.get("player_level", 0),
+                        },
+                    )
+            self._known_reward_cycle_ids = current_cycle_ids
 
             data = {}
             for player in players:
@@ -65,6 +90,9 @@ class LifequestCoordinator(DataUpdateCoordinator[dict]):
                     "quests": quests,
                     "completions": completions,
                 }
+
+            # Store pending rewards at the top level of data
+            data["_pending_rewards"] = pending_rewards
             return data
         except LifequestAPIError as err:
             raise UpdateFailed(f"Error fetching Lifequest data: {err}") from err

@@ -12,6 +12,7 @@ from .const import (
     EVENT_QUEST_COMPLETED,
     SERVICE_COMPLETE_QUEST,
     SERVICE_REFRESH_DATA,
+    SERVICE_DELIVER_REWARD,
 )
 from .coordinator import LifequestCoordinator
 
@@ -20,6 +21,12 @@ SERVICE_SCHEMA_COMPLETE_QUEST = vol.Schema(
     {
         vol.Required("player_id"): cv.positive_int,
         vol.Required("quest_id"): cv.positive_int,
+    }
+)
+
+SERVICE_SCHEMA_DELIVER_REWARD = vol.Schema(
+    {
+        vol.Required("cycle_id"): cv.positive_int,
     }
 )
 
@@ -79,6 +86,24 @@ def async_setup_services(hass: HomeAssistant) -> None:
         coordinator: LifequestCoordinator = next(iter(entries.values()))
         await coordinator.async_request_refresh()
 
+    async def handle_deliver_reward(call: ServiceCall) -> None:
+        """Handle the deliver_reward service call."""
+        cycle_id = call.data["cycle_id"]
+
+        entries = hass.data.get(DOMAIN, {})
+        if not entries:
+            raise HomeAssistantError("Lifequest integration not configured")
+
+        coordinator: LifequestCoordinator = next(iter(entries.values()))
+        api: LifequestAPI = coordinator.api
+
+        try:
+            await api.deliver_reward(cycle_id)
+        except LifequestAPIError as err:
+            raise HomeAssistantError(f"Failed to deliver reward: {err}") from err
+
+        await coordinator.async_request_refresh()
+
     hass.services.async_register(
         DOMAIN,
         SERVICE_COMPLETE_QUEST,
@@ -89,4 +114,10 @@ def async_setup_services(hass: HomeAssistant) -> None:
         DOMAIN,
         SERVICE_REFRESH_DATA,
         handle_refresh_data,
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_DELIVER_REWARD,
+        handle_deliver_reward,
+        schema=SERVICE_SCHEMA_DELIVER_REWARD,
     )

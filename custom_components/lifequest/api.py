@@ -6,6 +6,8 @@ import aiohttp
 from .const import (
     AUTH_LOGIN,
     LEVELS,
+    REWARDS_PENDING,
+    REWARDS_DELIVER,
     USERS_PLAYERS,
     USERS_PLAYER_DETAIL,
     QUESTS,
@@ -120,3 +122,12 @@ class LifequestAPI:
     async def get_levels(self) -> list[dict]:
         """Fetch all level names."""
         return await self._request("GET", LEVELS)
+
+    async def get_pending_rewards(self) -> list[dict]:
+        """Fetch all pending (undelivered) rewards."""
+        return await self._request("GET", REWARDS_PENDING)
+
+    async def deliver_reward(self, cycle_id: int) -> dict:
+        """Mark a reward as delivered."""
+        path = REWARDS_DELIVER.format(cycle_id=cycle_id)
+        return await self._request("PUT", path)

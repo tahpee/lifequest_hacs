@@ -28,6 +28,8 @@ async def async_setup_entry(
 
     entities: list[SensorEntity] = []
     for player_id, player_data in coordinator.data.items():
+        if player_id == "_pending_rewards":
+            continue
         name = player_data["name"]
         slug = name.lower().replace(" ", "_")
         entities.extend(
@@ -38,6 +40,9 @@ async def async_setup_entry(
                 LifequestCompletionsTodaySensor(coordinator, player_id, slug),
             ]
         )
+
+    # Global sensor for pending rewards
+    entities.append(LifequestRewardsPendingSensor(coordinator))
 
     async_add_entities(entities)
 
@@ -215,5 +220,46 @@ class LifequestCompletionsTodaySensor(LifequestBaseSensor):
                     "completed_at": c.get("completed_at", ""),
                 }
                 for c in today_completions
+            ]
+        }
+
+
+class LifequestRewardsPendingSensor(
+    CoordinatorEntity[LifequestCoordinator], SensorEntity
+):
+    """Sensor for pending rewards count."""
+
+    _attr_name = "Rewards Pending"
+    _attr_icon = "mdi:gift-outline"
+    _attr_has_entity_name = True
+
+    def __init__(self, coordinator: LifequestCoordinator) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator)
+        self._attr_unique_id = "lifequest_rewards_pending"
+
+    @property
+    def native_value(self) -> int | None:
+        if self.coordinator.data is None:
+            return None
+        rewards = self.coordinator.data.get("_pending_rewards", [])
+        return len(rewards)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        if self.coordinator.data is None:
+            return {}
+        rewards = self.coordinator.data.get("_pending_rewards", [])
+        return {
+            "rewards": [
+                {
+                    "cycle_id": r.get("id"),
+                    "player_id": r.get("player_id"),
+                    "player_name": r.get("player_name", ""),
+                    "level": r.get("player_level", 0),
+                    "level_name": r.get("level_name", ""),
+                    "points_at_reward": r.get("points_at_reward", 0),
+                }
+                for r in rewards
             ]
         }
