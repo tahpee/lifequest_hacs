@@ -237,6 +237,11 @@ class LifequestRewardsPendingSensor(
         """Initialize the sensor."""
         super().__init__(coordinator)
         self._attr_unique_id = "lifequest_rewards_pending"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, "lifequest")},
+            name="Lifequest",
+            manufacturer="Lifequest",
+        )
 
     @property
     def native_value(self) -> int | None:

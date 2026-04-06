@@ -1,0 +1,14 @@
+# Sample Lifequest Notification Automation
+# Add this in Home Assistant: Settings → Automations → Create Automation → YAML
+
+alias: Lifequest Reward Notification
+trigger:
+  - platform: event
+    event_type: lifequest_reward_pending
+action:
+  - service: notify.notify
+    data:
+      title: "Lifequest Reward Ready!"
+      message: >
+        {{ trigger.event.data.player_name }} reached
+        {{ trigger.event.data.level_name }} — deliver their reward!
