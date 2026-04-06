@@ -10,7 +10,9 @@ When committing changes to this repo, always:
 4. Push to both remotes with tags:
    - `origin` → `git.heathmont.ahpee.net:hacs/lifequest_hacs.git`
    - `github` → `github.com:tahpee/lifequest_hacs.git`
+5. Create a GitHub release using `gh`:
+   - `gh release create v{version} --generate-notes`
 
 ```bash
-git push origin main --tags && git push github main --tags
+git push origin main --tags && git push github main --tags && gh release create v{version} --generate-notes
 ```
